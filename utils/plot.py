@@ -10,8 +10,7 @@ SUFFIXES = ("", "_d1", "_d2")
 def plot(
     spline, targets, start, end, knots, multiplier, save: Path | None = None
 ) -> tuple[float, float, float]:
-    # (n parts) * multiplier regions, same as the C++ control grid
-    x = np.linspace(start, end, (len(knots) - 1) * multiplier + 1)
+    x = np.linspace(start, end, max((len(knots) - 1) * multiplier + 1, 1000))
     funcs = (spline, spline.d1, spline.d2)
 
     max_errs = []
