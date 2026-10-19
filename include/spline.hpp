@@ -118,13 +118,8 @@ struct CubicSpline {
         : knots(grid.nodeRange()) {
         auto [stripa, stripb, stripc] = createStrips(grid);
         auto phis = createPhis(grid, target, second_derivative);
-        auto c_coefs = thomas::thomas(
-            stripa,
-            stripb,
-            stripc,
-            phis,
-            std::invoke(second_derivative, grid.start()),
-            std::invoke(second_derivative, grid.end()));
+        auto c_coefs =
+            thomas::thomas(stripa, stripb, stripc, phis, static_cast<F>(0), static_cast<F>(0));
         auto a_coefs = calcA(grid, target);
         auto d_coefs = calcD(c_coefs, grid.step());
         auto b_coefs = calcB(grid, c_coefs, target);
