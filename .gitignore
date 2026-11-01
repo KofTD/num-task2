@@ -4,3 +4,4 @@ build*/
 *.fish
 __pycache__/
 .venv
+subprojects/

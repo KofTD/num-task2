@@ -20,72 +20,86 @@ namespace po = boost::program_options;
 namespace sr = std::ranges;
 namespace sv = std::views;
 
-template <std::floating_point F> auto undersqrt(F val) -> F
-{ return 1 + 3 * sqr(val); }
-
-template <std::floating_point F> auto func(F val) -> F
-{ return std::sqrt(undersqrt(val)) + std::cos(10 * val); }
-
-template <std::floating_point F> auto derivative(F val) -> F
+template<std::floating_point F>
+F
+undersqrt(F val)
 {
-	F s = std::sqrt(undersqrt(val));
-	return 3 * val / s - 10 * std::sin(10 * val);
+  return 1 + 3 * sqr(val);
 }
 
-template <std::floating_point F> auto secondDerivative(F val) -> F
+template<std::floating_point F>
+F
+func(F val)
 {
-	F s = std::sqrt(undersqrt(val));
-	return 3 / cube(s) - 100 * std::cos(10 * val);
+  return std::sqrt(undersqrt(val)) + std::cos(10 * val);
 }
 
-int main(int argc, char *argv[])
+template<std::floating_point F>
+F
+derivative(F val)
 {
-	std::string output_name;
-	std::uint32_t nodes = 1;
-	po::options_description desc("Allowed options");
-	desc.add_options()("help,h", "this help message")(
-		"nodes,n", po::value<std::uint32_t>(&nodes),
-		"number of nodes between start and end")(
-		"output,o",
-		po::value<std::string>(&output_name)
-			->default_value("spline-out-c.txt"),
-		"output for coefficients and grid");
-	po::variables_map vmap;
-	po::store(po::parse_command_line(argc, argv, desc), vmap);
-	po::notify(vmap);
+  F s = std::sqrt(undersqrt(val));
+  return 3 * val / s - 10 * std::sin(10 * val);
+}
 
-	if (vmap.contains("help") or vmap.empty()) {
-		std::cout << desc << '\n';
-		return 0;
-	}
+template<std::floating_point F>
+F
+secondDerivative(F val)
+{
+  F s = std::sqrt(undersqrt(val));
+  return 3 / cube(s) - 100 * std::cos(10 * val);
+}
 
-	if (!vmap.contains("nodes")) {
-		std::println("Requires number of nodes! (see help)");
-		return 1;
-	}
+int
+main(int argc, char* argv[])
+{
+  std::string output_name;
+  std::uint32_t nodes = 1;
+  po::options_description desc("Allowed options");
+  desc.add_options()("help,h", "this help message")(
+    "nodes,n",
+    po::value<std::uint32_t>(&nodes),
+    "number of nodes between start and end")(
+    "output,o",
+    po::value<std::string>(&output_name)->default_value("spline-out-c.txt"),
+    "output for coefficients and grid");
+  po::variables_map vmap;
+  po::store(po::parse_command_line(argc, argv, desc), vmap);
+  po::notify(vmap);
 
-	using fp_type = double;
+  if (vmap.contains("help") or vmap.empty()) {
+    std::cout << desc << '\n';
+    return 0;
+  }
 
-	fp_type start = 0.0;
-	fp_type end = 2.0;
-	const grid::UniformGrid grid(start, end, nodes);
+  if (!vmap.contains("nodes")) {
+    std::println("Requires number of nodes! (see help)");
+    return 1;
+  }
 
-	spline::CubicSpline spline(grid, func<fp_type>,
-				   secondDerivative<fp_type>);
+  using fp_type = double;
 
-	table::table1(grid, spline);
-	std::println("");
-	table::table2(grid, spline, func<fp_type>, derivative<fp_type>,
-		      secondDerivative<fp_type>);
+  fp_type start = 0.0;
+  fp_type end = 2.0;
+  const grid::UniformGrid grid(start, end, nodes);
 
-	std::ofstream spline_out(output_name);
-	if (!spline_out.is_open()) {
-		std::println("Error: could not open {} to dump coefs",
-			     output_name);
-		return 1;
-	}
-	serialization::exportSpline(spline_out, spline, grid);
-	spline_out.close();
+  spline::CubicSpline spline(grid, func<fp_type>, secondDerivative<fp_type>);
 
-	return 0;
+  table::table1(grid, spline);
+  std::println("");
+  table::table2(grid,
+                spline,
+                func<fp_type>,
+                derivative<fp_type>,
+                secondDerivative<fp_type>);
+
+  std::ofstream spline_out(output_name);
+  if (!spline_out.is_open()) {
+    std::println("Error: could not open {} to dump coefs", output_name);
+    return 1;
+  }
+  serialization::exportSpline(spline_out, spline, grid);
+  spline_out.close();
+
+  return 0;
 }
