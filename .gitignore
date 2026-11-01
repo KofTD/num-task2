@@ -2,6 +2,7 @@ build*/
 *.png
 *.txt
 *.fish
+*.pdf
 __pycache__/
 .venv
 subprojects/
