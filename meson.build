@@ -24,16 +24,30 @@ program_options_dep = dependency(
 deps = [gsl_dep, program_options_dep, thomas_dep, grid_dep]
 inc_dir = include_directories('include')
 
-part_a = executable(
+executable(
     'part-a',
     ['src/part-a.cpp'],
     include_directories: inc_dir,
     dependencies: deps,
 )
 
-part_c = executable(
+executable(
     'part-c',
     ['src/part-c.cpp'],
+    include_directories: inc_dir,
+    dependencies: deps,
+)
+
+executable(
+    'e-find',
+    ['src/e-find.cpp'],
+    include_directories: inc_dir,
+    dependencies: deps,
+)
+
+executable(
+    'critical',
+    ['src/critical.cpp'],
     include_directories: inc_dir,
     dependencies: deps,
 )

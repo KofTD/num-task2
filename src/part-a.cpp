@@ -1,4 +1,3 @@
-#include <concepts>
 #include <fstream>
 #include <iostream>
 #include <print>
@@ -8,6 +7,7 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
+#include "phi.hpp"
 #include "power.hpp"
 #include "serialization.hpp"
 #include "spline.hpp"
@@ -19,33 +19,6 @@ using power::sqr;
 namespace po = boost::program_options;
 namespace sr = std::ranges;
 namespace sv = std::views;
-
-template<std::floating_point F>
-F
-func(F val)
-{
-  if (val <= 0)
-    return cube(val) + 3 * sqr(val);
-  return -cube(val) + 3 * sqr(val);
-}
-
-template<std::floating_point F>
-F
-derivative(F val)
-{
-  if (val <= 0)
-    return 3 * sqr(val) + 6 * val;
-  return -3 * sqr(val) + 6 * val;
-}
-
-template<std::floating_point F>
-F
-secondDerivative(F val)
-{
-  if (val <= 0)
-    return 6 * val + 6;
-  return -6 * val + 6;
-}
 
 int
 main(int argc, char* argv[])
@@ -80,15 +53,15 @@ main(int argc, char* argv[])
   fp_type end = 1.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline spline(grid, func<fp_type>, secondDerivative<fp_type>);
+  spline::CubicSpline spline(grid, phi<fp_type>, phiSecondDerivative<fp_type>);
 
   table::table1(grid, spline);
   std::println("");
   table::table2(grid,
                 spline,
-                func<fp_type>,
-                derivative<fp_type>,
-                secondDerivative<fp_type>);
+                phi<fp_type>,
+                phiDerivative<fp_type>,
+                phiSecondDerivative<fp_type>);
 
   std::ofstream spline_out(output_name);
   if (!spline_out.is_open()) {

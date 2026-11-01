@@ -1,4 +1,3 @@
-#include <concepts>
 #include <fstream>
 #include <iostream>
 #include <print>
@@ -8,6 +7,7 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
+#include "fcos.hpp"
 #include "power.hpp"
 #include "serialization.hpp"
 #include "spline.hpp"
@@ -19,36 +19,6 @@ using power::sqr;
 namespace po = boost::program_options;
 namespace sr = std::ranges;
 namespace sv = std::views;
-
-template<std::floating_point F>
-F
-undersqrt(F val)
-{
-  return 1 + 3 * sqr(val);
-}
-
-template<std::floating_point F>
-F
-func(F val)
-{
-  return std::sqrt(undersqrt(val)) + std::cos(10 * val);
-}
-
-template<std::floating_point F>
-F
-derivative(F val)
-{
-  F s = std::sqrt(undersqrt(val));
-  return 3 * val / s - 10 * std::sin(10 * val);
-}
-
-template<std::floating_point F>
-F
-secondDerivative(F val)
-{
-  F s = std::sqrt(undersqrt(val));
-  return 3 / cube(s) - 100 * std::cos(10 * val);
-}
 
 int
 main(int argc, char* argv[])
@@ -83,15 +53,15 @@ main(int argc, char* argv[])
   fp_type end = 2.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline spline(grid, func<fp_type>, secondDerivative<fp_type>);
+  spline::CubicSpline spline(grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
 
   table::table1(grid, spline);
   std::println("");
   table::table2(grid,
                 spline,
-                func<fp_type>,
-                derivative<fp_type>,
-                secondDerivative<fp_type>);
+                fcos<fp_type>,
+                fcosDerivative<fp_type>,
+                fcosSecondDerivative<fp_type>);
 
   std::ofstream spline_out(output_name);
   if (!spline_out.is_open()) {

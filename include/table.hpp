@@ -109,9 +109,9 @@ table2(const grid::UniformGrid<T>& grid,
     "F''-S''");
   std::println("{}", sep2);
 
-  T max_err = std::numeric_limits<T>::min();
-  T max_derr = std::numeric_limits<T>::min();
-  T max_sderr = std::numeric_limits<T>::min();
+  T max_err = 0.0;
+  T max_derr = 0.0;
+  T max_sderr = 0.0;
   T xerr = grid.start() - 1;
   T xderr = grid.start() - 1;
   T xsderr = grid.start() - 1;
@@ -161,6 +161,6 @@ table2(const grid::UniformGrid<T>& grid,
   std::println("{}", sep2);
   std::println("max |F-S|     = {:.4e} at x = {}", max_err, xerr);
   std::println("max |F'-S'|   = {:.4e} at x = {}", max_derr, xderr);
-  std::println("max |F''-S''| = {:.5e} at x = {}", max_sderr, xsderr);
+  std::println("max |F''-S''| = {:.4e} at x = {}", max_sderr, xsderr);
 }
 } // namespace table
