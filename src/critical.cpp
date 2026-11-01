@@ -117,8 +117,10 @@ main()
     std::swap(phi_errors, errors);
   }
   std::println("Phi errors for {} nodes:", phi_nodes + 1);
-  std::println(
-    "Spline: {:.4} at {} (previous was {})", phi_errors.spline.error, phi_errors.spline.point, prev_epsilon);
+  std::println("Spline: {:.4} at {} (previous was {})",
+               phi_errors.spline.error,
+               phi_errors.spline.point,
+               prev_epsilon);
   std::println("Derivative: {:.4} at {}",
                phi_errors.derivative.error,
                phi_errors.derivative.point);
@@ -147,8 +149,10 @@ main()
     std::swap(fcos_errors, errors);
   }
   std::println("f + cos(10x) errors for {} nodes:", fcos_nodes + 1);
-  std::println(
-    "Spline: {:.4} at {} (previous was {})", fcos_errors.spline.error, fcos_errors.spline.point, prev_epsilon);
+  std::println("Spline: {:.4} at {} (previous was {})",
+               fcos_errors.spline.error,
+               fcos_errors.spline.point,
+               prev_epsilon);
   std::println("Derivative: {:.4} at {}",
                fcos_errors.derivative.error,
                fcos_errors.derivative.point);

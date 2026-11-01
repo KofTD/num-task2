@@ -53,7 +53,8 @@ main(int argc, char* argv[])
   fp_type end = 2.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline spline(grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
+  spline::CubicSpline spline(
+    grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
 
   table::table1(grid, spline);
   std::println("");
