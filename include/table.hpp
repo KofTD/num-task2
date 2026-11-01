@@ -84,7 +84,7 @@ table2(const grid::UniformGrid<T>& grid,
        U multiplier = 10U)
 {
   const grid::UniformGrid control_grid(
-    grid.start(), grid.end(), grid.steps() * multiplier - 1);
+    grid.start(), grid.end(), grid.nodes() * multiplier - 2);
 
   const spline::Derivative der(spline);
   const spline::SecondDerivative sder(spline);
