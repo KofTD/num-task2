@@ -159,6 +159,8 @@ table2(const grid::UniformGrid<T>& grid,
   }
 
   std::println("{}", sep2);
+  std::println("Spline grid nodes = {}", grid.nodes());
+  std::println("Control grid nodes = {}", control_grid.nodes());
   std::println("max |F-S|     = {:.4e} at x = {}", max_err, xerr);
   std::println("max |F'-S'|   = {:.4e} at x = {}", max_derr, xderr);
   std::println("max |F''-S''| = {:.4e} at x = {}", max_sderr, xsderr);
