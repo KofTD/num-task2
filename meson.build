@@ -32,6 +32,13 @@ executable(
 )
 
 executable(
+    'part-b',
+    ['src/part-b.cpp'],
+    include_directories: inc_dir,
+    dependencies: deps,
+)
+
+executable(
     'part-c',
     ['src/part-c.cpp'],
     include_directories: inc_dir,
