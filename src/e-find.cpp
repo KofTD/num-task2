@@ -124,6 +124,32 @@ main()
   start = 0.0;
   end = 2.0;
   epsilon = 1.0;
+  std::uint32_t f_nodes = 1;
+  Errors<fp_type> f_errors;
+  for (; epsilon >= 1E-6; f_nodes++) {
+    const grid::UniformGrid grid(start, end, f_nodes);
+    spline::CubicSpline f_spline(
+      grid, targetFunc<fp_type>, targetFuncSecondDerivative<fp_type>);
+    auto errors = calculateErrors(grid,
+                                  f_spline,
+                                  targetFunc<fp_type>,
+                                  targetFuncDerivative<fp_type>,
+                                  targetFuncSecondDerivative<fp_type>);
+    epsilon = errors.spline.error;
+    std::swap(f_errors, errors);
+  }
+  std::println("f errors for {} nodes:", f_nodes + 1);
+  std::println(
+    "Spline: {:.4} at {}", f_errors.spline.error, f_errors.spline.point);
+  std::println("Derivative: {:.4} at {}",
+               f_errors.derivative.error,
+               f_errors.derivative.point);
+  std::println("Second derivative: {:.4} at {}",
+               f_errors.second_derivative.error,
+               f_errors.second_derivative.point);
+  std::println("");
+
+  epsilon = 1.0;
   std::uint32_t fcos_nodes = 1;
   Errors<fp_type> fcos_errors;
   for (; epsilon >= 1E-6; fcos_nodes++) {
