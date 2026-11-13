@@ -1,4 +1,3 @@
-#include <concepts>
 #include <print>
 
 #include <boost/program_options.hpp>
@@ -6,87 +5,10 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
+#include "error.hpp"
 #include "f.hpp"
 #include "phi.hpp"
-#include "power.hpp"
 #include "spline.hpp"
-
-using power::cube;
-using power::sqr;
-
-namespace po = boost::program_options;
-namespace sr = std::ranges;
-namespace sv = std::views;
-
-template<std::floating_point F>
-struct Error
-{
-  F error;
-  F point;
-};
-
-template<std::floating_point F>
-struct Errors
-{
-  Error<F> spline;
-  Error<F> derivative;
-  Error<F> second_derivative;
-};
-
-template<typename T,
-         std::invocable<T> Func1,
-         std::invocable<T> Func2,
-         std::invocable<T> Func3,
-         std::unsigned_integral U = std::uint32_t>
-Errors<T>
-calculateErrors(const grid::UniformGrid<T>& grid,
-                const spline::CubicSpline<T>& spline,
-                Func1&& target,
-                Func2&& derivative,
-                Func3&& second_derivative,
-                U multiplier = 10U)
-{
-  const grid::UniformGrid control_grid(
-    grid.start(), grid.end(), grid.nodes() * multiplier - 2);
-
-  const spline::Derivative der(spline);
-  const spline::SecondDerivative sder(spline);
-  T max_err = 0.0;
-  T max_derr = 0.0;
-  T max_sderr = 0.0;
-  T xerr = grid.start() - 1;
-  T xderr = grid.start() - 1;
-  T xsderr = grid.start() - 1;
-  for (auto&& [j, knot] : sv::enumerate(control_grid.nodeRange())) {
-    auto target_val = std::invoke(target, knot);
-    auto spline_val = spline(knot);
-    auto err = target_val - spline_val;
-
-    auto tder_val = std::invoke(derivative, knot);
-    auto der_val = der(knot);
-    auto der_err = tder_val - der_val;
-
-    auto tsder_val = std::invoke(second_derivative, knot);
-    auto sder_val = sder(knot);
-    auto sder_err = tsder_val - sder_val;
-
-    if (auto aerr = std::abs(err); max_err < aerr) {
-      xerr = knot;
-      max_err = aerr;
-    }
-    if (auto aerr = std::abs(der_err); max_derr < aerr) {
-      xderr = knot;
-      max_derr = aerr;
-    }
-    if (auto aerr = std::abs(sder_err); max_sderr < aerr) {
-      xsderr = knot;
-      max_sderr = aerr;
-    }
-  }
-  return { { .error = max_err, .point = xerr },
-           { .error = max_derr, .point = xderr },
-           { .error = max_sderr, .point = xsderr } };
-}
 
 int
 main()
@@ -97,9 +19,10 @@ main()
   fp_type end = 1.0;
   fp_type prev_epsilon = 2.0;
   fp_type epsilon = 1.0;
+  fp_type epsilon_diff = 1E-9;
   std::uint32_t phi_nodes = 100;
   Errors<fp_type> phi_errors;
-  for (; std::abs(epsilon - prev_epsilon) >= 1E-9; phi_nodes++) {
+  for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; phi_nodes++) {
     const grid::UniformGrid grid(start, end, phi_nodes);
     spline::CubicSpline phi_spline(
       grid, phi<fp_type>, phiSecondDerivative<fp_type>);
@@ -129,9 +52,41 @@ main()
   end = 2.0;
   prev_epsilon = 2.0;
   epsilon = 1.0;
+  std::uint32_t f_nodes = 100;
+  Errors<fp_type> f_errors;
+  for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; f_nodes++) {
+    const grid::UniformGrid grid(start, end, f_nodes);
+    spline::CubicSpline f_spline(
+      grid, targetFunc<fp_type>, targetFuncSecondDerivative<fp_type>);
+    auto errors = calculateErrors(grid,
+                                  f_spline,
+                                  targetFunc<fp_type>,
+                                  targetFuncDerivative<fp_type>,
+                                  targetFuncSecondDerivative<fp_type>);
+    prev_epsilon = epsilon;
+    epsilon = errors.spline.error;
+    std::swap(f_errors, errors);
+  }
+  std::println("f errors for {} nodes:", f_nodes + 1);
+  std::println("Spline: {:.4} at {} (previous was {})",
+               f_errors.spline.error,
+               f_errors.spline.point,
+               prev_epsilon);
+  std::println("Derivative: {:.4} at {}",
+               f_errors.derivative.error,
+               f_errors.derivative.point);
+  std::println("Second derivative: {:.4} at {}",
+               f_errors.second_derivative.error,
+               f_errors.second_derivative.point);
+  std::println("");
+
+  start = 0.0;
+  end = 2.0;
+  prev_epsilon = 2.0;
+  epsilon = 1.0;
   std::uint32_t fcos_nodes = 100;
   Errors<fp_type> fcos_errors;
-  for (; std::abs(epsilon - prev_epsilon) >= 1E-9; fcos_nodes++) {
+  for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; fcos_nodes++) {
     const grid::UniformGrid grid(start, end, fcos_nodes);
     spline::CubicSpline fcos_spline(
       grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
