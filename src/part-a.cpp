@@ -8,17 +8,11 @@
 #include <thomas.hpp>
 
 #include "phi.hpp"
-#include "power.hpp"
 #include "serialization.hpp"
 #include "spline.hpp"
 #include "table.hpp"
 
-using power::cube;
-using power::sqr;
-
 namespace po = boost::program_options;
-namespace sr = std::ranges;
-namespace sv = std::views;
 
 int
 main(int argc, char* argv[])
@@ -49,11 +43,12 @@ main(int argc, char* argv[])
 
   using fp_type = double;
 
-  fp_type start = -1.0;
-  fp_type end = 1.0;
+  fp_type constexpr start = -1.0;
+  fp_type constexpr end = 1.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline spline(grid, phi<fp_type>, phiSecondDerivative<fp_type>);
+  spline::CubicSpline const spline(
+    grid, phi<fp_type>, phiSecondDerivative<fp_type>);
 
   table::table1(grid, spline);
   std::println("");

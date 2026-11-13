@@ -6,7 +6,7 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
-#include "fcos.hpp"
+#include "f.hpp"
 #include "phi.hpp"
 #include "power.hpp"
 #include "spline.hpp"

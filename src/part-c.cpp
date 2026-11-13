@@ -7,18 +7,12 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
-#include "fcos.hpp"
-#include "power.hpp"
+#include "f.hpp"
 #include "serialization.hpp"
 #include "spline.hpp"
 #include "table.hpp"
 
-using power::cube;
-using power::sqr;
-
 namespace po = boost::program_options;
-namespace sr = std::ranges;
-namespace sv = std::views;
 
 int
 main(int argc, char* argv[])
@@ -49,11 +43,11 @@ main(int argc, char* argv[])
 
   using fp_type = double;
 
-  fp_type start = 0.0;
-  fp_type end = 2.0;
+  fp_type constexpr start = 0.0;
+  fp_type constexpr end = 2.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline spline(
+  spline::CubicSpline const spline(
     grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
 
   table::table1(grid, spline);
