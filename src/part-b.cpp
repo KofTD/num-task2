@@ -47,8 +47,7 @@ main(int argc, char* argv[])
   fp_type constexpr end = 2.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline const spline(
-    grid, targetFunc<fp_type>, targetFuncSecondDerivative<fp_type>);
+  spline::CubicSpline const spline(grid, targetFunc<fp_type>, zero<fp_type>);
 
   table::table1(grid, spline);
   std::println("");

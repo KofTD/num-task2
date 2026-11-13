@@ -5,6 +5,13 @@
 
 template<std::floating_point F>
 F
+zero(F /*arg*/)
+{
+  return 0;
+}
+
+template<std::floating_point F>
+F
 undersqrt(F arg)
 {
   return 1 + 3 * power::sqr(arg);

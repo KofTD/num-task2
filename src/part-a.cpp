@@ -7,6 +7,7 @@
 #include <gsl/assert>
 #include <thomas.hpp>
 
+#include "f.hpp"
 #include "phi.hpp"
 #include "serialization.hpp"
 #include "spline.hpp"
@@ -47,8 +48,7 @@ main(int argc, char* argv[])
   fp_type constexpr end = 1.0;
   const grid::UniformGrid grid(start, end, nodes);
 
-  spline::CubicSpline const spline(
-    grid, phi<fp_type>, phiSecondDerivative<fp_type>);
+  spline::CubicSpline const spline(grid, phi<fp_type>, zero<fp_type>);
 
   table::table1(grid, spline);
   std::println("");
