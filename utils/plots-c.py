@@ -35,8 +35,8 @@ def main(inputf: Path):
     errs = plot(
         spline,
         (target, d_target, d2_target),
-        0,
-        2,
+        grid_parameters.start,
+        grid_parameters.end,
         knots=spline.knots,
         multiplier=multiplier,
         save=Path("F_spline.png"),

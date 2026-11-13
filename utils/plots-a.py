@@ -39,8 +39,8 @@ def main(inputf: Path):
     errs = plot(
         spline,
         (phi, dphi, d2phi),
-        -1,
-        1,
+        grid_parameters.start,
+        grid_parameters.end,
         knots=spline.knots,
         multiplier=multiplier,
         save=Path("phi_spline.png"),
