@@ -24,8 +24,7 @@ main()
   Errors<fp_type> phi_errors;
   for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; phi_nodes++) {
     const grid::UniformGrid grid(start, end, phi_nodes);
-    spline::CubicSpline phi_spline(
-      grid, phi<fp_type>, phiSecondDerivative<fp_type>);
+    spline::CubicSpline phi_spline(grid, phi<fp_type>, zero<fp_type>);
     auto errors = calculateErrors(grid,
                                   phi_spline,
                                   phi<fp_type>,
@@ -56,8 +55,7 @@ main()
   Errors<fp_type> f_errors;
   for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; f_nodes++) {
     const grid::UniformGrid grid(start, end, f_nodes);
-    spline::CubicSpline f_spline(
-      grid, targetFunc<fp_type>, targetFuncSecondDerivative<fp_type>);
+    spline::CubicSpline f_spline(grid, targetFunc<fp_type>, zero<fp_type>);
     auto errors = calculateErrors(grid,
                                   f_spline,
                                   targetFunc<fp_type>,
@@ -88,8 +86,7 @@ main()
   Errors<fp_type> fcos_errors;
   for (; std::abs(epsilon - prev_epsilon) >= epsilon_diff; fcos_nodes++) {
     const grid::UniformGrid grid(start, end, fcos_nodes);
-    spline::CubicSpline fcos_spline(
-      grid, fcos<fp_type>, fcosSecondDerivative<fp_type>);
+    spline::CubicSpline fcos_spline(grid, fcos<fp_type>, zero<fp_type>);
     auto errors = calculateErrors(grid,
                                   fcos_spline,
                                   fcos<fp_type>,
